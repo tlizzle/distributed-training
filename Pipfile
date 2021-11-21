@@ -1,0 +1,15 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+pandas = "*"
+tensorflow = "==2.6.0"
+keras = "==2.6.0"
+sklearn = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.6"
