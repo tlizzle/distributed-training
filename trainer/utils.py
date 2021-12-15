@@ -34,8 +34,6 @@ def get_data(_path, batch_size):
     return train_dataset
 
 
-model_path = '/tmp/keras-model'
-
 def _is_chief(task_type, task_id):
     return (task_type == 'worker' and task_id == 0) or task_type is None
 
