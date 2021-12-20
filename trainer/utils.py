@@ -3,6 +3,7 @@ import pandas as pd
 import numpy as np
 from trainer.config import label_to_index
 import tensorflow as tf
+import argparse
 from sklearn.model_selection import train_test_split
 
 def get_data(_path, batch_size):
@@ -28,7 +29,7 @@ def get_data(_path, batch_size):
     # features = tf.convert_to_tensor(features)
 
     train_dataset = tf.data.Dataset.from_tensor_slices(
-        (X_train, y_train)).shuffle(60000).repeat().batch(64)
+        (X_train, y_train)).shuffle(60000).repeat().batch(batch_size)
 
 
     return train_dataset
@@ -50,4 +51,17 @@ def write_filepath(filepath, task_type, task_id):
         dirpath = _get_temp_dir(dirpath, task_id)
     return os.path.join(dirpath, base)
 
-
+def get_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        '--epochs',
+        required=True,
+        type=int,
+        help='number training epochs')
+    parser.add_argument(
+        '--job-dir',
+        required=True,
+        type=str,
+        help='bucket to save model')
+    args = parser.parse_args()
+    return args

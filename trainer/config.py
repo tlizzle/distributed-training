@@ -1,7 +1,8 @@
 import json
 
 _resource_path = 'resources/Iris.csv'
-model_path = 'gs://tmp/keras-model'
+model_path = 'gs://tessorflow-store/model_dir'
+
 
 tf_config = {
     'cluster': {

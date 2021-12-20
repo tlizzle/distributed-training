@@ -1,0 +1,67 @@
+#! /usr/bin/env bash
+
+# If the first parameter looks like:
+#    gs://some-bucket-name/foo_script
+# then this entrypoint script will copy that script to /run/cmd, make it executable, and run it
+# the bucket will need to be in the project you're using to launch the training job, otherwise
+# you'll need to give the default AI training service account access to the bucket
+# (https://stackoverflow.com/questions/58478478/how-can-i-mount-a-gcs-bucket-in-a-custom-docker-image-on-ai-platform#comment103289576_58478549)
+
+set -euo pipefail
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+
+1>&2 echo "Entered Foo Container (container id: $(cat /etc/hostname))"
+
+# if the caller has staged a script in /run/cmd, run it
+runcmd() {
+    1>&2 echo "examining /run/cmd:"
+    SHEBANG='^#!.*$'
+    FIRST_LINE="$(head -1 /run/cmd)"
+    if [[ $FIRST_LINE =~ $SHEBANG ]]
+    then
+        1>&2 printf "    It has a shebang, execution via:\n\t$FIRST_LINE\n"
+        chmod +x /run/cmd
+        /run/cmd
+    else
+        1>&2 echo "    No shebang detected, sourcing /run/cmd..."
+        source /run/cmd
+    fi
+}
+
+# this function is for runtime setup stuff
+initcontainer() {
+    source "$DIR/init.sh"
+    1>&2 echo "Foo Container Initialization Complete"
+}
+
+# if the user volume-mounted a gcloud directory, assume their identity
+if [[ -d /root/.config/gcloud ]]
+then
+    initcontainer
+fi
+
+
+if [[ "$#" == 0 ]]
+then # no arguments were supplied
+    if [ ! -t 1 ]
+    then
+        # stdin is not a tty, try /run/cmd
+        1>&2 echo "No command supplied"
+        runcmd
+    else
+        # stdin is a tty
+        1>&2 echo "No command supplied, going interactive..."
+        bash -i
+
+    fi
+else # arguments were supplied
+    if [[ "$1" =~ ^gs://.*/.*script$ ]]
+    then
+        1>&2 echo "Fetching command from google cloud storage bucket into /run/cmd"
+        gsutil cp "$1" /run/cmd
+        runcmd
+    else
+        1>&2 echo "Running: \`$@\`"
+            eval $@
+    fi
+fi

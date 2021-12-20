@@ -1,16 +1,20 @@
 trainingInput:
- scaleTier: CUSTOM
- masterType: n1-standard-8
+ scaleTier: STANDARD_1
  masterConfig:
-   acceleratorConfig:
-     count: 1
-     type: NVIDIA_TESLA_T4
-   imageUri: gcr.io/{path/to/image}:{tag}
+   imageUri: asia.gcr.io/tensorflow-project-335114/distributed-training:0.0.1
  useChiefInTfConfig: true
- workerType: n1-standard-8
- workerCount: 1
  workerConfig:
-   acceleratorConfig:
-     count: 1
-     type: NVIDIA_TESLA_T4
-   imageUri: gcr.io/{path/to/image}:{tag}
+   imageUri: asia.gcr.io/tensorflow-project-335114/distributed-training:0.0.1
+  
+
+
+
+
+
+
+# gcloud ai-platform local train --module-name trainer.task --package-path trainer --distributed --parameter-server-count 4 --worker-count 4
+# gcloud ai-platform local train --package-path trainer --module-name trainer.task
+# gcloud config set ml_engine/local_py
+# python /Users/tony/.local/share/virtualenvs/distributed_training--HTWSE8h-python/bin/python3
+
+
