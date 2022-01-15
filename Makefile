@@ -2,7 +2,6 @@ PROJECT_ID=tensorflow-project-335114
 IMAGE_REPO_NAME=distributed-training
 IMAGE_TAG=0.0.1
 IMAGE_NAME=asia.gcr.io/${PROJECT_ID}/${IMAGE_REPO_NAME}:${IMAGE_TAG}
-# IMAGE_NAME=asia.gcr.io/tensorflow-project-335114/distributed-training:0.0.1
 
 
 all: | delete build
@@ -17,7 +16,7 @@ delete ::
 	docker rmi ${IMAGE_NAME}
 
 ai-submit ::
-	gcloud ai-platform jobs submit training distributed_test_10 \
+	gcloud ai-platform jobs submit training distributed_test_12 \
 	--project tensorflow-project-335114 \
 	--region asia-east1 \
 	--staging-bucket gs://tessorflow-store \
